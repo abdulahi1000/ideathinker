@@ -27,7 +27,7 @@ SECRET_KEY = 'a(1_si-2dahk*=bwtn61#xa7k$0v2ktgrvpmle=19czcpe^!94'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['idea-thinker.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
@@ -189,4 +189,7 @@ STATICFIELS_DIRS=[
 
 STATIC_ROOT = BASE_DIR/ 'staticfiles'
 CORS_ALLOW_ALL_ORIGINS=True
+
+if os.getcwd() == '/app':
+    DEBUG = False
 
