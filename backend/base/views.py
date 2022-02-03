@@ -1,13 +1,14 @@
 from django.shortcuts import render
 
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import IsAuthenticated
 from requests import get
 from django.db import transaction
 import os
@@ -18,10 +19,23 @@ from .serializers import *
 from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.core.mail import EmailMessage
+from django.http import HttpResponse
 
 # Create your views here.
 
+
+@api_view(['GET'])
+def requestList(request):
+    data=[
+        '/api/all_user/',
+        '/api/login/',
+        '/api/register/',
+        '/api/uploadImage/',
+        '/api/getWeather/',
+        {'for dummy email sending':'/api/sendMail/'},
+
+    ]
+    return Response(data)
 
 @api_view(['GET'])
 def allUserProfile(request):
@@ -45,29 +59,30 @@ class MyTokenObtainPairView(TokenObtainPairView):
 @transaction.atomic
 def registerUser(request): 
     data = request.data
-    # try:
-    user = User.objects.create(
-        first_name = data['first_name'],
-        last_name = data['last_name'],
-        email = data['email'],
-        password =make_password(data['password'])
-    ) 
-    userprofile = UserProfile.objects.create(
-        user=user,
-        first_name = data['first_name'],
-        last_name = data['last_name'],
-        email = data['email'],
-        phone_number = data['phone_number'],
+    try:
+        user = User.objects.create(
+            first_name = data['first_name'],
+            last_name = data['last_name'],
+            email = data['email'],
+            password =make_password(data['password'])
+        ) 
+        userprofile = UserProfile.objects.create(
+            user=user,
+            first_name = data['first_name'],
+            last_name = data['last_name'],
+            email = data['email'],
+            phone_number = data['phone_number'],
 
-    )
-    serializer = UserProfileSerializer(userprofile)
-    return Response(serializer.data)
-    # except: 
-    #     massage ={'detail': 'user with this email already exists'}
-    #     return Response(massage, status=status.HTTP_400_BAD_REQUEST)
+        )
+        serializer = UserProfileSerializer(userprofile)
+        return Response(serializer.data)
+    except: 
+        massage ={'detail': 'user with this email already exists'}
+        return Response(massage, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
 @transaction.atomic
+@permission_classes([IsAuthenticated])
 def imageUpload(request):
     user = request.user
 
@@ -103,12 +118,5 @@ def sendMail(request):
 
     mail.send_mail(subject, plain_message, from_email, [to], html_message=html_message)
 
-    # email = EmailMessage(
-    #     'Title',
-    #     'body goes here',
-    #     from_email,
-    #     [to]
-    # )
-    # email.send()
     return Response('working')
 

@@ -3,7 +3,8 @@ from . import views
 
 
 urlpatterns = [
-    path('all_user', views.allUserProfile, name='user_list'),
+    path('', views.requestList, name='request_list'),
+    path('all_user/', views.allUserProfile, name='user_list'),
     path('login/', views.MyTokenObtainPairView.as_view(), name='login_with_token' ),
     path('register/', views.registerUser, name='register'),
     path('uploadImage/', views.imageUpload, name='image-upload'),
