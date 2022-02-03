@@ -44,11 +44,17 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework_simplejwt',
+    'corsheaders',
 
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
+
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -85,6 +91,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'ATOMIC_REQUESTS':True,
     }
 }
 
@@ -164,8 +171,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'abdulahiopeyemiq1@gmail.com'
-EMAIL_HOST_PASSWORD = 'ope2000yemi'
-# EMAIL_HOST_PASSWORD = os.environ.get('GMAIL_PASSWORD') 
+EMAIL_HOST_PASSWORD = 'ope2000yemi' 
+# EMAIL_HOST_PASSWORD = os.environ.get('GMAIL_PASSWORD')  
 
 
 
@@ -179,4 +186,6 @@ MEDIA_URL='/images/'
 STATICFIELS_DIRS=[
     BASE_DIR /'static'
 ]
+
+CORS_ALLOW_ALL_ORIGINS=True
 

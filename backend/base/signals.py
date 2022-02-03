@@ -5,6 +5,8 @@ from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
+from .models import *
+
 
 def updateUser(sender, instance, **kwargs):
     user = instance

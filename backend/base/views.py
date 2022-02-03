@@ -9,6 +9,8 @@ from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from requests import get
+from django.db import transaction
+import os
 
 
 from .serializers import *
@@ -40,15 +42,14 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = myTokenObtainPairSerializer
 
 @api_view(['POST'])
+@transaction.atomic
 def registerUser(request): 
     data = request.data
-    print(data['email'])
     # try:
     user = User.objects.create(
         first_name = data['first_name'],
         last_name = data['last_name'],
         email = data['email'],
-        # username = data['email'], 
         password =make_password(data['password'])
     ) 
     userprofile = UserProfile.objects.create(
@@ -66,6 +67,7 @@ def registerUser(request):
     #     return Response(massage, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
+@transaction.atomic
 def imageUpload(request):
     user = request.user
 
@@ -79,12 +81,15 @@ def imageUpload(request):
 @api_view(['POST'])
 def getWeather(request):
     data = request.data
-
+    # appId = os.environ.get('WEATHER_API_ID')
     appId = 'ab1d18fb699a235516a19f175a46585d'
     url = 'https://api.openweathermap.org/data/2.5/weather'
     response = get(url+f"?lat={data['lat']}&lon={data['lon']}&appid={appId}")
 
-    return Response(response.json())
+    if response.status_code != status.HTTP_200_OK:
+        return Response({'details':'something went wrong with the api server, try again'})
+    else:
+        return Response(response.json())
 
 @api_view(['POST'])
 def sendMail(request):
