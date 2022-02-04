@@ -96,8 +96,7 @@ def imageUpload(request):
 @api_view(['POST'])
 def getWeather(request):
     data = request.data
-    # appId = os.environ.get('WEATHER_API_ID')
-    appId = 'ab1d18fb699a235516a19f175a46585d'
+    appId = os.environ.get('WEATHER_API_ID')
     url = 'https://api.openweathermap.org/data/2.5/weather'
     response = get(url+f"?lat={data['lat']}&lon={data['lon']}&appid={appId}")
 
